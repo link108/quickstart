@@ -1,4 +1,21 @@
 source "https://rubygems.org"
 
+# framework
 gem 'sinatra'
+gem 'sinatra-reloader'
+
+# debugger
+gem 'pry-byebug'
+
+# tests
+gem 'mocha'
+gem 'webmock'
+gem 'rack-test'
+
+# Clients
 gem 'plaid'
+gem 'clearbit'
+
+# Utilities
+gem 'json'
+gem 'haml'
