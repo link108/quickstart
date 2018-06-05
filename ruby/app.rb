@@ -44,16 +44,8 @@ get '/transactions' do
   end_date = params[:end_date] || '2017-01-09'
 
   transactions = PlaidClient.get_transactions(access_token, start_date, end_date)
-  descriptor_to_info = transactions.group_by(&:name).reduce({}) do |res, (name, values)|
-    clearbit_info = ClearbitClient.get_company_info(name).to_h || {}
-    derived_info = PlaidClient.derived_info(values)
-    res[name] = clearbit_info.merge(derived_info)
-    res
-  end
-
-  sorted_transactions = transactions.sort_by(&:date).reverse.map do |transaction|
-    transaction.to_h.reduce({}) {|r,(k,v)| r[k.to_s] = v; r}.merge(descriptor_to_info[transaction.name])
-  end
+  company_name_to_info = get_company_info(transactions)
+  sorted_transactions = sort_and_format_transactions(transactions, company_name_to_info)
   content_type :json
   {transactions: sorted_transactions}.to_json
 end
@@ -62,4 +54,19 @@ get '/create_public_token' do
   public_token_response = client.item.public_token.exchange(access_token)
   content_type :json
   public_token_response.to_json
+end
+
+def sort_and_format_transactions(transactions, company_name_to_info)
+  transactions.sort_by(&:date).reverse.map do |transaction|
+    transaction.to_h.reduce({}) {|r,(k,v)| r[k.to_s] = v; r}.merge(company_name_to_info[transaction.name])
+  end
+end
+
+def get_company_info(transactions)
+  transactions.group_by(&:name).reduce({}) do |res, (name, values)|
+    clearbit_info = ClearbitClient.get_company_info(name).to_h || {}
+    derived_info = PlaidClient.derived_info(values)
+    res[name] = clearbit_info.merge(derived_info)
+    res
+  end
 end

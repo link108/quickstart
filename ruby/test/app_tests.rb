@@ -24,4 +24,55 @@ class AppTest < Test::Unit::TestCase
     assert last_response.ok?
   end
 
+  def test_sort_and_format_transactions
+    transactions = [
+      OpenStruct.new({date: '2017-01-30', name: 'test-company'}),
+      OpenStruct.new({date: '2017-02-30', name: 'test-company'}),
+      OpenStruct.new({date: '2017-05-30', name: 'test-company'}),
+      OpenStruct.new({date: '2017-03-30', name: 'test-company'}),
+      OpenStruct.new({date: '2017-03-30', name: 'test-company'}),
+      OpenStruct.new({date: '2018-03-30', name: 'test-company'}),
+      OpenStruct.new({date: '2017-10-30', name: 'test-company'})
+    ]
+    company_name_to_info = { 'test-company' => { 'company' => 'data' }}
+
+    expected = [
+      {"date"=>"2018-03-30", "name"=>"test-company", "company"=>"data"},
+      {"date"=>"2017-10-30", "name"=>"test-company", "company"=>"data"},
+      {"date"=>"2017-05-30", "name"=>"test-company", "company"=>"data"},
+      {"date"=>"2017-03-30", "name"=>"test-company", "company"=>"data"},
+      {"date"=>"2017-03-30", "name"=>"test-company", "company"=>"data"},
+      {"date"=>"2017-02-30", "name"=>"test-company", "company"=>"data"},
+      {"date"=>"2017-01-30", "name"=>"test-company", "company"=>"data"}
+    ]
+    actual = sort_and_format_transactions(transactions, company_name_to_info)
+    assert_equal expected, actual
+  end
+
+  def test_get_company_info
+    company_1 = 'test-company'
+    company_2 = 'test-company-2'
+    transactions = [
+      OpenStruct.new({name: company_1}),
+      OpenStruct.new({name: company_2})
+    ]
+    ClearbitClient
+      .expects(:get_company_info)
+      .with(company_1)
+      .returns({'data' => company_1})
+      .times(1)
+    ClearbitClient
+      .expects(:get_company_info)
+      .with(company_2)
+      .returns({'data' => company_2})
+      .times(1)
+    PlaidClient
+      .expects(:derived_info)
+      .returns({'data' => 'derived'})
+      .times(2)
+    expected = {"test-company"=>{"data"=>"derived"}, "test-company-2"=>{"data"=>"derived"}}
+    actual = get_company_info(transactions)
+    assert_equal expected, actual
+  end
+
 end
