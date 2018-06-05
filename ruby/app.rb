@@ -56,18 +56,6 @@ get '/transactions' do
   end
   content_type :json
   {transactions: sorted_transactions}.to_json
-
-=begin
-  #now = Date.today
-  #thirty_days_ago = (now - 30)
-  begin
-    transactions_response = client.transactions.get(access_token, start_date, end_date)
-  rescue Plaid::ItemError => e
-    transactions_response = { error: {error_code: e.error_code, error_message: e.error_message}}
-  end
-  content_type :json
-  transactions_response.to_json
-=end
 end
 
 get '/create_public_token' do
