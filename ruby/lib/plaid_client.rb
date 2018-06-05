@@ -7,7 +7,8 @@ module PlaidClient
                            client_id: ENV['PLAID_CLIENT_ID'],
                            secret: ENV['PLAID_SECRET'],
                            public_key: ENV['PLAID_PUBLIC_KEY'])
-  DAYS_BETWEEN_RECURRING_PAYMENTS = ENV['DAYS_BETWEEN_RECURRING_PAYMENTS'] ? ENV['DAYS_BETWEEN_RECURRING_PAYMENTS'].split(' ').map(&:to_i) : [13, 14, 15, 16, 25, 26, 27, 28, 29, 30, 31] 
+
+  DAYS_BETWEEN_RECURRING_PAYMENTS = [13, 14, 15, 16, 25, 26, 27, 28, 29, 30, 31] 
 
   def self.get_transactions(access_token, start_date, end_date)
 

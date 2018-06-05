@@ -5,7 +5,6 @@ require_relative 'lib/plaid_client'
 require_relative 'lib/clearbit_client'
 
 set :public_folder, File.dirname(__FILE__) + '/public'
-enable :logging
 
 client = Plaid::Client.new(env: :sandbox,
                            client_id: ENV['PLAID_CLIENT_ID'],
