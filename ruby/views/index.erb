@@ -136,6 +136,12 @@
               html += '<strong>' + txn.name + '</strong><br>';
               html += '$' + txn.amount;
               html += '<br><em>' + txn.date + '</em>';
+              html += '<br><em>Recurring? ' + txn.recurring_payment + '</em>';
+              if (txn.description) { html += '<br><em>' + txn.description + '</em>'; }
+              <%# if (txn.logo) { html += "<br>Logo: <img src:'"+ escape(txn.logo) + "'>"; } %>
+              if (txn.domain) { html += '<br><em>Domain: ' + txn.domain + '</em>'; }
+              if (txn.location && typeof txn.location == 'string') { html += '<br><em>' + txn.location + '</em>'; }
+              if (txn.phone) { html += '<br><em>' + txn.phone + '</em>'; }
               html += '</div>';
             });
 
